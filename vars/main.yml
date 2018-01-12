@@ -1,0 +1,10 @@
+---
+# vars file for mediapeers.influxdb
+
+# Channel of influx repo to use for install
+influxdb_install_version: stable
+
+# Telegraf repo (by Influxdata)
+influxdb_repo_base_url: "https://repos.influxdata.com"
+
+

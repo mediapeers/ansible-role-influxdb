@@ -1,0 +1,8 @@
+---
+# tasks file for mediapeers.influxdb
+
+# TODO
+# - add repo https://repos.influxdata.com/ubuntu/ & key
+# - apt-get install influxdb chronograf kapacitor
+# - configure
+# - notify service

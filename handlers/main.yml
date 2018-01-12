@@ -1,0 +1,14 @@
+---
+# handlers file for mediapeers.influxdb
+
+- name: restart influxdb
+  service: influxdb
+  state: restarted
+
+- name: restart chronograf
+  service: chronograf
+  state: restarted
+
+- name: restart kapacitor
+  service: kapacitor
+  state: restarted
