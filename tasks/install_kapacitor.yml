@@ -1,0 +1,12 @@
+# Installs and configures Kapacitor Alerting deamon for InfluxDB
+
+- name: Install Kapacitor package
+  apt:
+    name: kapacitor
+    state: present
+
+- name: Configures Kapacitor (mostly InfluxDB credentials)
+  template:
+    src: kapacitor.conf.j2
+    dest: /etc/kapacitor/kapacitor.conf
+  notify: restart kapacitor

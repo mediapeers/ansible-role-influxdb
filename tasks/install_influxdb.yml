@@ -1,0 +1,65 @@
+# Installs and configures InfluxDB to be a host for Telegraf metrics
+# and to let Chronograf and Kapacitor connect to it with their own users
+
+- name: Install InfluxDB package
+  apt:
+    name: influxdb
+    state: present
+
+- name: Configure InfluxDB (also enables auth)
+  template:
+    src: influxdb.conf.j2
+    dest: /etc/influxdb/influxdb.conf
+  notify: restart influxdb
+
+- name: Create InfluxDB admin user
+  shell: >
+    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
+    -execute "CREATE USER {{ influxdb_admin_user }} WITH PASSWORD '{{ influxdb_admin_pw }}' WITH ALL PRIVILEGES"
+  register: admin_output
+
+- name: Output result of admin creation
+  debug:
+    var: admin_output.stdout
+
+- name: Create telegraf and chronograf DBs
+  influxdb_database:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    database_name:  "{{ item }}"
+    state: present
+  with_items:
+    - {{ influxdb_telegraf_db }}
+    - {{ influxdb_chronograf_db }}
+
+- name: Create retention policy for telegraf DB
+  influxdb_retention_policy:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    database_name:  "{{ influxdb_telegraf_db }}"
+    policy_name: "{{ telegraf_retention_policy_name }}"
+    duration: "{{ telegraf_retention_time }}"
+    replication: 1
+    default: true
+
+- name: Create chronograf app user with READ access to telegraf and chronograf DB
+  shell: >
+    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
+    -execute "CREATE USER {{ influxdb_chronograf_user }} WITH PASSWORD '{{ influxdb_chronograf_pw }}'" &&
+    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
+    -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_chronograf_user }}" &&
+    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
+    -execute "GRANT ALL ON {{ influxdb_chronograf_db }} TO {{ influxdb_chronograf_user }}"
+
+- name: Create telegraf agent user with WRITE access to telegraf DB
+  shell: >
+    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
+    -execute "CREATE USER {{ influxdb_telegraf_user }} WITH PASSWORD '{{ influxdb_telegraf_pw }}'" &&
+    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
+    -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_telegraf_user }}"
+
+

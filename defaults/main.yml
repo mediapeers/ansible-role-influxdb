@@ -1,5 +1,31 @@
 ---
 # defaults file for mediapeers.influxdb
 
-# TODO:
-# add variables
+influxdb_install_influxdb: true
+influxdb_install_chronograf: true
+influxdb_install_kapacitor: true
+
+influxdb_data_dir: /var/lib/influxdb
+
+telegraf_retention_policy_name: metrics
+telegraf_retention_time: 90d
+
+influxdb_telegraf_db: telegraf
+influxdb_chronograf_db: chronograf
+
+# InfluxDB auth
+# for services connecting to InfluxDB like Telegraf, Chronograf and Kapacitor
+influxdb_admin_user: admin
+influxdb_admin_pw: abc123
+influxdb_chronograf_user: chronograf
+influxdb_chronograf_pw: abc123
+influxdb_telegraf_user: telegraf
+influxdb_telegraf_pw: ab123
+
+# Chronograf auth
+# For users connecting to chronograf through OAuth
+influxdb_chronograf_oauth_secret: abc123 # change this to a random string!
+influxdb_chronograf_oauth_duration: 168h
+influxdb_chronograf_oauth_github_id: abc123 # change this to what GH provides
+influxdb_chronograf_oauth_github_secret: abc123 # change this to what GH provides
+influxdb_chronograf_oauth_github_org: myorg # change this and make sure oauth app is owned by org!

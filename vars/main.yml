@@ -7,4 +7,5 @@ influxdb_install_version: stable
 # Telegraf repo (by Influxdata)
 influxdb_repo_base_url: "https://repos.influxdata.com"
 
-
+influxdb_port: 8086
+influxdb_host: localhost

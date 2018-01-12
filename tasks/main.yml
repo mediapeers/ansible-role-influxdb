@@ -1,8 +1,28 @@
 ---
 # tasks file for mediapeers.influxdb
 
-# TODO
-# - add repo https://repos.influxdata.com/ubuntu/ & key
-# - apt-get install influxdb chronograf kapacitor
-# - configure
-# - notify service
+- name: Import InfluxData GPG signing key
+  apt_key:
+    url: "{{ telegraf_repo_base_url }}/influxdb.key"
+    state: present
+
+- name: Add InfluxData repository
+  apt_repository:
+    repo: deb {{ telegraf_repo_base_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ telegraf_install_version }}
+    state: present
+
+- name: Update apt index
+  apt:
+    update_cache: true
+
+# Install and configure each component:
+
+- include: install_influxdb.yml
+  when: influxdb_install_influxdb
+
+- include: install_chronograf.yml
+  when: influxdb_install_chronograf
+
+- include: install_kapacitor.yml
+  when: influxdb_install_kapacitor
+

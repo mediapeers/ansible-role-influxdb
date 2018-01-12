@@ -1,0 +1,17 @@
+# Installs and configures Chronograf the Webapp for InfluxDB
+
+- name: Install chronograf package
+  apt:
+    name: chronograf
+    state: present
+
+- name: Configure startup params (overwriting original init script)
+  template:
+    src: chronograf_init.j2
+    dest: /etc/init.d/chrongraf
+  notify: restart chronograf
+
+#- name: Restore config DB for Chronograf to usual location
+#  file:
+#    src: chonograf_db_backup.db
+#    dest: /var/lib/chronograf/chronograf-v1.db
