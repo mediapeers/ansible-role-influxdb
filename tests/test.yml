@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  remote_user: root
+  become: true
   vars:
     influxdb_chronograf_oauth_secret: sdfsdfdfsd12312312abcb
     influxdb_admin_pw: supersecretsupersecret

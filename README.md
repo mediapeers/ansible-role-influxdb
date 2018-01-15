@@ -36,6 +36,7 @@ Depends on no other role
 Example role integration into your play:
 
     - hosts: servers
+      become: true
       vars:
         influxdb_port: 123
       roles:
