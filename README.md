@@ -17,9 +17,15 @@ world or another port if you change the config or put a webserver infront of it.
 
 Role variables you should change:
 
-- `github_secret` - GH app secret
-- ....
+- `influxdb_admin_pw: secret_pw` - set your own PW for InfluxDB admin user
+- `influxdb_chronograf_pw: secret_pw` - set your own PW for InfluxDB chronograf user (for reading data)
+- `influxdb_telegraf_pw: secret_pw` - set your own PW for InfluxDB telegraf user (for ingesting data)
+- `influxdb_chronograf_oauth_secret: abc123def` - Random string used as encryption salt.
+- `influxdb_chronograf_oauth_github_id: abc123` - OAuth app id provided by Github after creating one.
+- `influxdb_chronograf_oauth_github_secret: abc123` -  OAauth app secret provided by Github
+- `influxdb_chronograf_oauth_github_org: myorg` - Restrict this to your Github org, make sure your OAuth app is owned by this org.
 
+Optionally you can change more params, see `defaults/main.yml` for details.
 
 ## Dependencies
 
