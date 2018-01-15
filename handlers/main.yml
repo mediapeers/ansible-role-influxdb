@@ -4,14 +4,17 @@
 - name: restart influxdb
   service:
     name: influxdb
+    enabled: yes
     state: restarted
 
 - name: restart chronograf
   service:
     name: chronograf
+    enabled: yes
     state: restarted
 
 - name: restart kapacitor
   service:
     name: kapacitor
+    enabled: yes
     state: restarted

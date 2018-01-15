@@ -12,10 +12,6 @@
     dest: /etc/influxdb/influxdb.conf
   notify: restart influxdb
 
-- name: Wait a sec for startup to finish
-  pause:
-    seconds: 2
-
 - name: Create InfluxDB admin user
   shell: >
     influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}

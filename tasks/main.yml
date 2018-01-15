@@ -17,6 +17,16 @@
   apt:
     update_cache: true
 
+- name: Install influxdb python binding in order to user the Ansible influxdb_database module
+  apt:
+    name: python-influxdb
+    state: present
+  when: ansible_python_version <= '3.0'
+
+- apt:
+    name: python3-influxdb
+    state: present
+  when: ansible_python_version >= '3.0'
 
 # Install and configure each component:
 

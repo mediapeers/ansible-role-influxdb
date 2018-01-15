@@ -5,6 +5,8 @@
     name: chronograf
     state: present
 
+# TODO: make this work for systemd too!
+# which uses service file in /lib/systemd/system/chrongraf.service instead
 - name: Configure startup params (overwriting original init script)
   template:
     src: chronograf_init.j2
