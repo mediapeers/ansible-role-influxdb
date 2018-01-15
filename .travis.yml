@@ -15,8 +15,12 @@ install:
   - ruby -v
   - gem install serverspec
 
-  # Install Ansible through pip
-  - sudo apt-get install -y python-pip python-dev python-urllib3
+  # Install some python stuff
+  - sudo apt-get install -y python-pip python-dev
+  # Fox https SNI issues for python:
+  - pip install urllib3 pyOpenSSL ndg-httpsclient pyasn1
+
+    # Install Ansible through pip
   - python --version
   - pip --version
   - sudo -H pip install ansible
