@@ -31,8 +31,8 @@
     database_name:  "{{ item }}"
     state: present
   with_items:
-    - {{ influxdb_telegraf_db }}
-    - {{ influxdb_chronograf_db }}
+    - "{{ influxdb_telegraf_db }}"
+    - "{{ influxdb_chronograf_db }}"
 
 - name: Create retention policy for telegraf DB
   influxdb_retention_policy:
