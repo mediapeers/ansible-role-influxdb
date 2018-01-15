@@ -16,7 +16,7 @@ install:
   - gem install serverspec
 
   # Install Ansible through pip
-  - sudo apt-get install -y python-pip python-dev python-urllib3 python-ndg-httpsclient
+  - sudo apt-get install -y python-pip python-dev python-urllib3
   - python --version
   - pip --version
   - sudo -H pip install ansible
