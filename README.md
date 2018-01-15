@@ -17,6 +17,7 @@ world or another port if you change the config or put a webserver infront of it.
 
 Role variables you should change:
 
+- `chronograf_public_url: https://some-url.com` - Publicly reachable URL of chronograf setup.
 - `influxdb_admin_pw: secret_pw` - set your own PW for InfluxDB admin user
 - `influxdb_chronograf_pw: secret_pw` - set your own PW for InfluxDB chronograf user (for reading data)
 - `influxdb_telegraf_pw: secret_pw` - set your own PW for InfluxDB telegraf user (for ingesting data)
