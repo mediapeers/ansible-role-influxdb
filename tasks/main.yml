@@ -3,12 +3,12 @@
 
 - name: Import InfluxData GPG signing key
   apt_key:
-    url: "{{ telegraf_repo_base_url }}/influxdb.key"
+    url: "{{ influxdb_repo_base_url }}/influxdb.key"
     state: present
 
 - name: Add InfluxData repository
   apt_repository:
-    repo: deb {{ telegraf_repo_base_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ telegraf_install_version }}
+    repo: deb {{ influxdb_repo_base_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ influxdb_install_version }}
     state: present
 
 - name: Update apt index
