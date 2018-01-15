@@ -13,6 +13,8 @@ through Chronograf and Kapacitor all on one host. Chronograf will be configured 
 Debian or Ubuntu server. Open port 8086 to receive InfluxDB traffic from outside this machine. Also open port 8888 to expose Chronograf to the outside
 world or another port if you change the config or put a webserver infront of it.
 
+**NOTE:** This role was only tested on Ubuntu 16.04 so far, so there might be issues on other distros! Feel free to open a PR against this repo to fix them.
+
 ## Role Variables
 
 Role variables you should change:

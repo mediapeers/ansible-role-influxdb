@@ -73,11 +73,12 @@ default-retention-policy = ""
   threshold = 0.0
   # Interval, if globally configured the frequency at which to check the throughput.
   interval = "10s"
+{% raw %}
   # Id -- the alert Id, NODE_NAME will be replaced with the name of the node being monitored.
   id = "node 'NODE_NAME' in task '{{ .TaskName }}'"
   # The message of the alert. INTERVAL will be replaced by the interval.
   message = "{{ .ID }} is {{ if eq .Level \"OK\" }}alive{{ else }}dead{{ end }}: {{ index .Fields \"collected\" | printf \"%0.3f\" }} points/INTERVAL."
-
+{% endraw %}
 
 # Multiple InfluxDB configurations can be defined.
 # Exactly one must be marked as the default.
@@ -310,6 +311,7 @@ default-retention-policy = ""
 #   headers = { Example = "your-key" }
 #   basic-auth = { username = "my-user", password = "my-pass" }
 #
+{% raw %}
 #   # Provide an alert template for constructing a custom HTTP body.
 #   # Alert templates are only used with post alert handlers as they consume alert data.
 #   # The template uses https://golang.org/pkg/text/template/ and has access to the following fields:
@@ -338,6 +340,7 @@ default-retention-policy = ""
 #   row-template = "{{.Name}} host={{index .Tags \"host\"}}{{range .Values}} {{index . "time"}} {{index . "value"}}{{end}}"
 #   # Specify an absolute path to a template file.
 #   row-template-file = "/path/to/template/file"
+{% endraw %}
 
 [slack]
   # Configure Slack.
