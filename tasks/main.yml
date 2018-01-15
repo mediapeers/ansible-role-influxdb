@@ -1,19 +1,7 @@
 ---
 # tasks file for mediapeers.influxdb
 
-- name: Import InfluxData GPG signing key
-  apt_key:
-    url: "{{ influxdb_repo_base_url }}/influxdb.key"
-    state: present
-
-- name: Add InfluxData repository
-  apt_repository:
-    repo: deb {{ influxdb_repo_base_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ influxdb_install_version }}
-    state: present
-
-- name: Update apt index
-  apt:
-    update_cache: true
+# Fixes for older distros with old python to allow HTTPs downloads from servers using SNI:
 
 - name: Install python-pip in order to install some python packages
   apt:
@@ -34,6 +22,23 @@
   when:
     (ansible_distribution == 'Ubuntu' and ansible_distribution_version < '15.04') or
     (ansible_distribution == 'Debian' and ansible_distribution_version < '8')
+
+# Installs influxdata repo and key:
+
+- name: Import InfluxData GPG signing key
+  apt_key:
+    url: "{{ influxdb_repo_base_url }}/influxdb.key"
+    state: present
+
+- name: Add InfluxData repository
+  apt_repository:
+    repo: deb {{ influxdb_repo_base_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ influxdb_install_version }}
+    state: present
+
+- name: Update apt index
+  apt:
+    update_cache: true
+
 
 # Install and configure each component:
 
