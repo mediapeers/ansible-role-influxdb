@@ -5,4 +5,4 @@
     influxdb_chronograf_oauth_secret: sdfsdfdfsd12312312abcb
     influxdb_admin_pw: supersecretsupersecret
   roles:
-    - mediapeers.influxdb
+    - ansible-role-influxdb

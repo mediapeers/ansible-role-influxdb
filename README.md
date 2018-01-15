@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mediapeers/ansible-role-influxdb.svg?branch=master)](https://travis-ci.org/mediapeers/ansible-role-influxdb)
+
 # Ansible InfluxDB server role
 
 Role that sets up a complete TICK stack server (not installing telegraf). It will install a compleete setup of InfluxDB, Chronograf and Kapacitor.
