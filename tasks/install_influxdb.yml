@@ -10,7 +10,13 @@
   template:
     src: influxdb.conf.j2
     dest: /etc/influxdb/influxdb.conf
-  notify: restart influxdb
+#  notify: restart influxdb
+
+- name: restart influxdb
+  service:
+    name: influxdb
+    enabled: yes
+    state: restarted
 
 - name: Create InfluxDB admin user
   shell: >
