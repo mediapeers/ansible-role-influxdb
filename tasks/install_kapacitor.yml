@@ -11,4 +11,3 @@
     dest: /etc/kapacitor/kapacitor.conf
   notify:
     - 'restart kapacitor'
-    - 'changed'

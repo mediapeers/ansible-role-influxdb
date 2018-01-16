@@ -12,7 +12,14 @@
     dest: /etc/influxdb/influxdb.conf
   notify:
     - 'restart influxdb'
-    - 'changed'
+
+# As handlers only run at the end of a play we can't rely on the notify of
+# the previous task, as we need InfluxDB running for the next task already.
+- name: Restart the InfluxDB before moving on
+  service:
+    name: influxdb
+    enabled: yes
+    state: restarted
 
 - name: Create InfluxDB admin user
   shell: >
