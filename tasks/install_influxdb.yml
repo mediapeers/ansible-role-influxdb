@@ -22,21 +22,24 @@
     state: restarted
 
 - name: Create InfluxDB admin user
-  shell: >
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "CREATE USER {{ influxdb_admin_user }} WITH PASSWORD '{{ influxdb_admin_pw }}' WITH ALL PRIVILEGES"
-  register: admin_output
-
-- name: Output result of admin creation
-  debug:
-    var: admin_output
+  influxdb_user:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    # User setup:
+    user_name:      "{{ influxdb_admin_user }}"
+    user_password:  "{{ influxdb_admin_pw }}"
+    admin: true
+    state: present
 
 - name: Create telegraf and chronograf DBs
   influxdb_database:
+    # Connection details:
     hostname:       "{{ influxdb_host }}"
     port:           "{{ influxdb_port }}"
     username:       "{{ influxdb_admin_user }}"
     password:       "{{ influxdb_admin_pw }}"
+    # DB setup:
     database_name:  "{{ item }}"
     state: present
   with_items:
@@ -45,38 +48,61 @@
 
 - name: Create retention policy for telegraf DB
   influxdb_retention_policy:
+    # Connection details:
     hostname:       "{{ influxdb_host }}"
     port:           "{{ influxdb_port }}"
     username:       "{{ influxdb_admin_user }}"
     password:       "{{ influxdb_admin_pw }}"
     database_name:  "{{ influxdb_telegraf_db }}"
+    # policy setup:
     policy_name: "{{ telegraf_retention_policy_name }}"
     duration: "{{ telegraf_retention_time }}"
     replication: 1
     default: true
 
-- name: Create chronograf app user with READ access to telegraf and chronograf DB
-  shell: >
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "CREATE USER {{ influxdb_chronograf_user }} WITH PASSWORD '{{ influxdb_chronograf_pw }}'" &&
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_chronograf_user }}" &&
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "GRANT ALL ON {{ influxdb_chronograf_db }} TO {{ influxdb_chronograf_user }}"
-  register: chronograf_output
+- name: Create InfluxDB chronograf user for Chronograf app access
+  influxdb_user:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    # User setup:
+    user_name:      "{{ influxdb_chronograf_user }}"
+    user_password:  "{{ influxdb_chronograf_pw }}"
+    state: present
 
-- name: Output result of chronograf user creation
-  debug:
-    var: chronograf_output
+- name: Grant access to telegraf and chronograf DBs for chronograf user
+  influxdb_query:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    # GRANT access query:
+    query: "GRANT ALL ON {{ item }} TO {{ influxdb_chronograf_user }}"
+  with_items:
+    - "{{ influxdb_telegraf_db }}"
+    - "{{ influxdb_chronograf_db }}"
 
-- name: Create telegraf agent user with WRITE access to telegraf DB
-  shell: >
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "CREATE USER {{ influxdb_telegraf_user }} WITH PASSWORD '{{ influxdb_telegraf_pw }}'" &&
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_telegraf_user }}"
-  register: telegraf_output
+- name: Create InfluxDB user for the telegraf agents
+  influxdb_user:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    # User setup:
+    user_name:      "{{ influxdb_telegraf_user }}"
+    user_password:  "{{ influxdb_telegraf_pw }}"
+    state: present
 
-- name: Output result of telegraf user creation
-  debug:
-    var: telegraf_output
+- name: Grant access to telegraf user to WRITE to telegraf DB
+  influxdb_query:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    # GRANT access query:
+    query: "GRANT WRITE ON {{ influxdb_telegraf_db }} TO {{ influxdb_telegraf_user }}"
