@@ -29,7 +29,7 @@
 
 - name: Output result of admin creation
   debug:
-    var: admin_output.stdout
+    var: admin_output
 
 - name: Create telegraf and chronograf DBs
   influxdb_database:
@@ -63,6 +63,11 @@
     -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_chronograf_user }}" &&
     influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
     -execute "GRANT ALL ON {{ influxdb_chronograf_db }} TO {{ influxdb_chronograf_user }}"
+  register: chronograf_output
+
+- name: Output result of chronograf user creation
+  debug:
+    var: chronograf_output
 
 - name: Create telegraf agent user with WRITE access to telegraf DB
   shell: >
@@ -70,5 +75,8 @@
     -execute "CREATE USER {{ influxdb_telegraf_user }} WITH PASSWORD '{{ influxdb_telegraf_pw }}'" &&
     influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
     -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_telegraf_user }}"
+  register: telegraf_output
 
-
+- name: Output result of telegraf user creation
+  debug:
+    var: telegraf_output

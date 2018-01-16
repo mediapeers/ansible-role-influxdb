@@ -8,6 +8,7 @@ env:
 
 before_install:
   - sudo apt-get update -qq
+  - sleep 2
 
 install:
   # Install ruby for and serverspec gem
@@ -17,10 +18,8 @@ install:
 
   # Install some python stuff
   - sudo apt-get install -y python-pip python-dev
-  # Fox https SNI issues for python:
-  - sudo pip install urllib3 pyOpenSSL ndg-httpsclient pyasn1
 
-    # Install Ansible through pip
+  # Install Ansible through pip
   - python --version
   - pip --version
   - sudo -H pip install ansible
