@@ -44,8 +44,8 @@ describe 'Kapacitor setup' do
     it { should be_file }
     its(:content) { should include("enabled = true") }
     its(:content) { should include("urls = [\"http://#{ANSIBLE_VARS.fetch('influxdb_host', 'FAIL')}:#{ANSIBLE_VARS.fetch('influxdb_port', 'FAIL')}\"]") }
-    its(:content) { should include("username = #{ANSIBLE_VARS.fetch('influxdb_admin_user', 'FAIL')}") }
-    its(:content) { should include("password = #{ANSIBLE_VARS.fetch('influxdb_admin_pw', 'FAIL')}") }
+    its(:content) { should include("username = \"#{ANSIBLE_VARS.fetch('influxdb_admin_user', 'FAIL')}\"") }
+    its(:content) { should include("password = \"#{ANSIBLE_VARS.fetch('influxdb_admin_pw', 'FAIL')}\"") }
   end
 
   describe service('kapacitor') do
