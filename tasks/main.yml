@@ -30,12 +30,12 @@
 
 # Install and configure each component:
 
-- include: install_influxdb.yml
+- import_tasks: install_influxdb.yml
   when: influxdb_install_influxdb
 
-- include: install_chronograf.yml
+- import_tasks: install_chronograf.yml
   when: influxdb_install_chronograf
 
-- include: install_kapacitor.yml
+- import_tasks: install_kapacitor.yml
   when: influxdb_install_kapacitor
 
