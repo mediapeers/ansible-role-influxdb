@@ -9,4 +9,5 @@
   template:
     src: kapacitor.conf.j2
     dest: /etc/kapacitor/kapacitor.conf
-  notify: restart kapacitor
+  notify:
+    - 'restart kapacitor'

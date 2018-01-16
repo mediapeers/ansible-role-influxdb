@@ -9,7 +9,8 @@
   template:
     src: chronograf_defaults.j2
     dest: /etc/default/chronograf
-  notify: restart chronograf
+  notify:
+    - 'restart chronograf'
 
 #- name: Restore config DB for Chronograf to usual location
 #  file:
