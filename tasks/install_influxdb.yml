@@ -6,6 +6,14 @@
     name: influxdb
     state: present
 
+- name: Create InfluxDB data dir with correct permissions
+  file:
+    name: "{{ influxdb_data_dir }}"
+    owner: influxdb
+    group: influxdb
+    mode: 0755
+    state: directory
+
 - name: Configure InfluxDB (also enables auth)
   template:
     src: influxdb.conf.j2
