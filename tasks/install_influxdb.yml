@@ -12,6 +12,7 @@
     dest: /etc/influxdb/influxdb.conf
   notify:
     - 'restart influxdb'
+    - 'changed'
 
 - name: Create InfluxDB admin user
   shell: >

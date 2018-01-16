@@ -11,6 +11,7 @@
     dest: /etc/default/chronograf
   notify:
     - 'restart chronograf'
+    - 'changed'
 
 #- name: Restore config DB for Chronograf to usual location
 #  file:

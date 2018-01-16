@@ -7,6 +7,10 @@
     enabled: yes
     state: restarted
 
+- name: changed
+  debug:
+    msg: Nofity fired
+
 - name: restart chronograf
   service:
     name: chronograf
