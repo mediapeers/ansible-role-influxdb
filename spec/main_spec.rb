@@ -40,7 +40,7 @@ describe 'Kapacitor setup' do
     it { should be_installed }
   end
 
-  describe file('/etc/kapacitor/kapacitor') do
+  describe file('/etc/kapacitor/kapacitor.conf') do
     it { should be_file }
     its(:content) { should include("enabled = true") }
     its(:content) { should include("urls = [\"http://#{ANSIBLE_VARS.fetch('influxdb_host', 'FAIL')}:#{ANSIBLE_VARS.fetch('influxdb_port', 'FAIL')}\"]") }
