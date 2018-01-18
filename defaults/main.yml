@@ -17,6 +17,12 @@ influxdb_chronograf_db: chronograf
 # instead to restore setup:
 # influxdb_meta_backup: /path/to/backup/meta.00
 
+# Set this variable to put an existing settings DB for Chronograf in place (contains chronograf users, source settings etc.)
+# influxdb_chronograf_db_backup: /path/to/backup/chronograf-v1.db
+
+# Set this variable to put an existing settings DB for Kapacitor in place (contains TICK scripts/alerting setups)
+# influxdb_kapacitor_db_backup: /path/to/backup/kapacitor.db
+
 # InfluxDB auth
 # for services connecting to InfluxDB like Telegraf, Chronograf and Kapacitor
 influxdb_admin_user: admin

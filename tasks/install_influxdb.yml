@@ -24,7 +24,7 @@
     src: influxdb.conf.j2
     dest: /etc/influxdb/influxdb.conf
 
-- name: Use backup for setting up users/DBs/chonograf configs (intead of creating them with Ansible)
+- name: Use backup for setting up users/DBs settings (intead of creating them with Ansible)
   copy:
     src: '{{ influxdb_meta_backup }}'
     dest: '/home/ubuntu/backup/'
