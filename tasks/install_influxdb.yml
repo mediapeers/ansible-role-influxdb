@@ -27,10 +27,10 @@
 - name: Use backup for setting up users/DBs/chonograf configs (intead of creating them with Ansible)
   copy:
     src: '{{ influxdb_meta_backup }}'
-    dest: '/home/ubuntu/'
+    dest: '/home/ubuntu/backup/'
   when: influxdb_meta_backup is defined
 
-- shell: influxd restore -metadir {{ influxdb_meta_dir }} /home/ubuntu/{{ influxdb_meta_backup }}
+- shell: influxd restore -metadir {{ influxdb_meta_dir }} /home/ubuntu/backup/
   when: influxdb_meta_backup is defined
   register: restore_output
 
