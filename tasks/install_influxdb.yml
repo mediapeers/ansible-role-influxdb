@@ -14,18 +14,15 @@
     mode: 0755
     state: directory
 
+- name: Stop the InfluxDB server before configuration/restore
+  service:
+    name: influxdb
+    state: stopped
+
 - name: Configure InfluxDB (also enables auth)
   template:
     src: influxdb.conf.j2
     dest: /etc/influxdb/influxdb.conf
-
-# As handlers only run at the end of a play we can't rely on the notify of
-# the previous task, as we need InfluxDB running for the next task already.
-- name: Restart the InfluxDB before moving on
-  service:
-    name: influxdb
-    enabled: yes
-    state: restarted
 
 - name: Use backup for setting up users/DBs/chonograf configs (intead of creating them with Ansible)
   copy:
@@ -33,7 +30,7 @@
     dest: '/home/ubuntu/'
   when: influxdb_meta_backup is defined
 
-- shell: influxd restore /home/ubuntu/{{ influxdb_meta_backup }}
+- shell: influxd restore -metadir {{ influxdb_meta_dir }} /home/ubuntu/{{ influxdb_meta_backup }}
   when: influxdb_meta_backup is defined
   register: restore_output
 
@@ -41,6 +38,12 @@
   debug:
     var: restore_output
   when: influxdb_meta_backup is defined
+
+- name: Start the InfluxDB server before to using it in the next steps
+  service:
+    name: influxdb
+    enabled: yes
+    state: started
 
 - name: Create InfluxDB admin user
   shell: >
