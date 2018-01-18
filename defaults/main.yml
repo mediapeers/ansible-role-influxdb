@@ -13,6 +13,10 @@ telegraf_retention_time: 90d
 influxdb_telegraf_db: telegraf
 influxdb_chronograf_db: chronograf
 
+# Set this variable to not create users and DBs and use a InluxDB meta DB backup
+# instead to restore setup:
+# influxdb_meta_backup: /path/to/backup/meta.00
+
 # InfluxDB auth
 # for services connecting to InfluxDB like Telegraf, Chronograf and Kapacitor
 influxdb_admin_user: admin
