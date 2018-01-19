@@ -19,6 +19,8 @@
   copy:
     src: '{{ influxdb_chronograf_db_backup }}'
     dest: /var/lib/chronograf/chronograf-v1.db
+    owner: chronograf
+    group: chronograf
   when: influxdb_chronograf_db_backup is defined
 
 - name: Start Chronograf

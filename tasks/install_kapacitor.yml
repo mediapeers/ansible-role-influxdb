@@ -19,6 +19,8 @@
   copy:
     src: '{{ influxdb_kapacitor_db_backup }}'
     dest: '{{ kapacitor_data_dir }}/kapacitor.db'
+    owner: kapacitor
+    group: kapacitor
   when: influxdb_kapacitor_db_backup is defined
 
 - name: Start Kapacitor
