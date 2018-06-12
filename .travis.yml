@@ -25,11 +25,6 @@ install:
   - sudo -H pip install ansible
   - ansible --version
 
-  # Add missing Ansible influxdb modules (backported from 2.5)
-  - mkdir library/
-  - cp files/influxdb_user.py library/
-  - cp files/influxdb_query.py library/
-
   # Add ansible.cfg to pick up roles and library path.
   - "{ echo '[defaults]'; echo 'roles_path = ../'; echo 'library = ./library' } >> ansible.cfg"
 
