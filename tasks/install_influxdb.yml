@@ -54,7 +54,6 @@
     user_name:      "{{ influxdb_admin_user }}"
     user_password:  "{{ influxdb_admin_pw }}"
     admin: true
-    retries: 3
     state: present
   when: influxdb_meta_backup is undefined
 
