@@ -5,9 +5,26 @@
     name: kapacitor
     state: present
 
+- name: Stop Kapacitor for config phase
+  service:
+    name: chronograf
+    state: stopped
+
 - name: Configures Kapacitor (mostly InfluxDB credentials)
   template:
     src: kapacitor.conf.j2
     dest: /etc/kapacitor/kapacitor.conf
-  notify:
-    - 'restart kapacitor'
+
+- name: Restore config DB for Kapacitor kapacitor dir
+  copy:
+    src: '{{ influxdb_kapacitor_db_backup }}'
+    dest: '{{ kapacitor_data_dir }}/kapacitor.db'
+    owner: kapacitor
+    group: kapacitor
+  when: influxdb_kapacitor_db_backup is defined
+
+- name: Start Kapacitor
+  service:
+    name: chronograf
+    enabled: yes
+    state: started

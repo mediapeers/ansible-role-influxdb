@@ -32,6 +32,12 @@ Role variables you should change:
 
 Optionally you can change more params, see `defaults/main.yml` for details.
 
+Some useful variables to restore state from existing DB backups:
+
+- `influxdb_meta_backup: /some/path/to/influxdb_backup/meta.00` - Path to local InfluxDB meta DB backup file, which will be copied to InfluxDB instance and restored. Will replace all other DB setup (users, tables etc.)
+- `influxdb_chronograf_db_backup: /some/path/chronograf-v1.db` - Path to local Chronograf settings DB file. Usually contains settings such as Influx sources and Chronograf auth users
+- `influxdb_kapacitor_db_backup: /some/path/kapacitor.db` - Path to local Kapacitor settings DB file. Usually contains alertings settings/TICK scripts etc.
+
 ## Dependencies
 
 Depends on no other role

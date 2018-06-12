@@ -8,7 +8,7 @@ env:
 
 before_install:
   - sudo apt-get update -qq
-  - sleep 1
+  - sleep 2
 
 install:
   # Install ruby for and serverspec gem
@@ -36,9 +36,10 @@ script:
   - "ansible-playbook -i tests/inventory tests/$SITE --connection=local"
 
   # Run the role/playbook again, checking to make sure it's idempotent.
+  # Allow 10 'changes' for status updates and restarts.
   - >
     ansible-playbook -i tests/inventory tests/$SITE --connection=local
-    | grep -q 'changed=5.*failed=0'
+    | grep -q 'changed=10.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
 

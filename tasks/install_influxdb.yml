@@ -6,20 +6,44 @@
     name: influxdb
     state: present
 
+- name: Create InfluxDB data dir with correct permissions
+  file:
+    name: "{{ influxdb_data_dir }}"
+    owner: influxdb
+    group: influxdb
+    mode: 0755
+    state: directory
+
+- name: Stop the InfluxDB server before configuration/restore
+  service:
+    name: influxdb
+    state: stopped
+
 - name: Configure InfluxDB (also enables auth)
   template:
     src: influxdb.conf.j2
     dest: /etc/influxdb/influxdb.conf
-  notify:
-    - 'restart influxdb'
 
-# As handlers only run at the end of a play we can't rely on the notify of
-# the previous task, as we need InfluxDB running for the next task already.
-- name: Restart the InfluxDB before moving on
+- name: Use backup for setting up users/DBs settings (intead of creating them with Ansible)
+  copy:
+    src: '{{ influxdb_meta_backup }}'
+    dest: '/home/ubuntu/backup/'
+  when: influxdb_meta_backup is defined
+
+- shell: influxd restore -metadir {{ influxdb_meta_dir }} /home/ubuntu/backup/
+  when: influxdb_meta_backup is defined
+  register: restore_output
+
+- name: Restore output
+  debug:
+    var: restore_output
+  when: influxdb_meta_backup is defined
+
+- name: Start the InfluxDB server before to using it in the next steps
   service:
     name: influxdb
     enabled: yes
-    state: restarted
+    state: started
 
 - name: Create InfluxDB admin user
   influxdb_user:
@@ -31,6 +55,7 @@
     user_password:  "{{ influxdb_admin_pw }}"
     admin: true
     state: present
+  when: influxdb_meta_backup is undefined
 
 - name: Create telegraf and chronograf DBs
   influxdb_database:
@@ -45,6 +70,7 @@
   with_items:
     - "{{ influxdb_telegraf_db }}"
     - "{{ influxdb_chronograf_db }}"
+  when: influxdb_meta_backup is undefined
 
 - name: Create retention policy for telegraf DB
   influxdb_retention_policy:
@@ -59,6 +85,7 @@
     duration: "{{ telegraf_retention_time }}"
     replication: 1
     default: true
+  when: influxdb_meta_backup is undefined
 
 - name: Create InfluxDB chronograf user for Chronograf app access
   influxdb_user:
@@ -71,6 +98,7 @@
     user_name:      "{{ influxdb_chronograf_user }}"
     user_password:  "{{ influxdb_chronograf_pw }}"
     state: present
+  when: influxdb_meta_backup is undefined
 
 - name: Grant access to telegraf and chronograf DBs for chronograf user
   influxdb_query:
@@ -84,6 +112,7 @@
   with_items:
     - "{{ influxdb_telegraf_db }}"
     - "{{ influxdb_chronograf_db }}"
+  when: influxdb_meta_backup is undefined
 
 - name: Create InfluxDB user for the telegraf agents
   influxdb_user:
@@ -96,6 +125,7 @@
     user_name:      "{{ influxdb_telegraf_user }}"
     user_password:  "{{ influxdb_telegraf_pw }}"
     state: present
+  when: influxdb_meta_backup is undefined
 
 - name: Grant access to telegraf user to WRITE to telegraf DB
   influxdb_query:
@@ -106,3 +136,4 @@
     password:       "{{ influxdb_admin_pw }}"
     # GRANT access query:
     query: "GRANT WRITE ON {{ influxdb_telegraf_db }} TO {{ influxdb_telegraf_user }}"
+  when: influxdb_meta_backup is undefined

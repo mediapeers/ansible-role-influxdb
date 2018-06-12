@@ -2,7 +2,7 @@
 # Must be resolvable by any configured InfluxDB hosts.
 hostname = "localhost"
 # Directory for storing a small amount of metadata about the server.
-data_dir = "/var/lib/kapacitor"
+data_dir = "{{ kapacitor_data_dir }}"
 
 # Do not apply configuration overrides during startup.
 # Useful if the configuration overrides cause Kapacitor to fail startup.
@@ -25,7 +25,7 @@ default-retention-policy = ""
   write-tracing = false
   pprof-enabled = false
   https-enabled = false
-  https-certificate = "/etc/ssl/kapacitor.pem"
+  # https-certificate = "/etc/ssl/kapacitor.pem"
 
 [config-override]
   # Enable/Disable the service for overridding configuration via the HTTP API.
@@ -49,20 +49,20 @@ default-retention-policy = ""
 
 [replay]
   # Where to store replay files, aka recordings.
-  dir = "/var/lib/kapacitor/replay"
+  dir = "{{ kapacitor_data_dir }}/replay"
 
 [task]
   # Where to store the tasks database
   # DEPRECATED: This option is not needed for new installations.
   # It is only used to determine the location of the task.db file
   # for migrating to the new `storage` service.
-  dir = "/var/lib/kapacitor/tasks"
+  # dir = "/var/lib/kapacitor/tasks"
   # How often to snapshot running task state.
   snapshot-interval = "60s"
 
 [storage]
   # Where to store the Kapacitor boltdb database
-  boltdb = "/var/lib/kapacitor/kapacitor.db"
+  boltdb = "{{ kapacitor_data_dir }}/kapacitor.db"
 
 [deadman]
   # Configure a deadman's switch
