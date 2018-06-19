@@ -25,6 +25,7 @@ describe 'Chronograf setup' do
     it { should be_file }
     its(:content) { should include("CHRONOGRAF_OPTS=\"--public-url #{ANSIBLE_VARS.fetch('chronograf_public_url', 'FAIL')}") }
     its(:content) { should include("--token-secret #{ANSIBLE_VARS.fetch('influxdb_chronograf_oauth_secret', 'FAIL')}") }
+    its(:content) { should include("--auth-duration #{ANSIBLE_VARS.fetch('influxdb_chronograf_oauth_duration', 'FAIL')}") }
     its(:content) { should include("--github-client-id #{ANSIBLE_VARS.fetch('influxdb_chronograf_oauth_github_id', 'FAIL')}") }
     its(:content) { should include("--github-client-secret #{ANSIBLE_VARS.fetch('influxdb_chronograf_oauth_github_secret', 'FAIL')}") }
     its(:content) { should include("--github-organization #{ANSIBLE_VARS.fetch('influxdb_chronograf_oauth_github_org', 'FAIL')}") }

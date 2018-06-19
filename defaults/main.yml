@@ -34,8 +34,9 @@ influxdb_telegraf_pw: ab123
 
 # Chronograf auth
 # For users connecting to chronograf through OAuth
+# Docs: https://docs.influxdata.com/chronograf/v1.5/administration/config-options/#authentication-options
 influxdb_chronograf_oauth_secret: abc123 # change this to a random string!
-influxdb_chronograf_oauth_duration: 168h
+influxdb_chronograf_oauth_duration: 720h # 30 days, default
 influxdb_chronograf_oauth_github_id: abc123 # change this to what GH provides
 influxdb_chronograf_oauth_github_secret: abc123 # change this to what GH provides
 influxdb_chronograf_oauth_github_org: myorg # change this and make sure oauth app is owned by org!
