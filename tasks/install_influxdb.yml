@@ -92,8 +92,8 @@
     # Connection details:
     hostname:       "{{ influxdb_host }}"
     port:           "{{ influxdb_port }}"
-    username:       "{{ influxdb_admin_user }}"
-    password:       "{{ influxdb_admin_pw }}"
+    login_username: "{{ influxdb_admin_user }}"
+    login_password: "{{ influxdb_admin_pw }}"
     # User setup:
     user_name:      "{{ influxdb_chronograf_user }}"
     user_password:  "{{ influxdb_chronograf_pw }}"
@@ -119,8 +119,8 @@
     # Connection details:
     hostname:       "{{ influxdb_host }}"
     port:           "{{ influxdb_port }}"
-    username:       "{{ influxdb_admin_user }}"
-    password:       "{{ influxdb_admin_pw }}"
+    login_username: "{{ influxdb_admin_user }}"
+    login_password: "{{ influxdb_admin_pw }}"
     # User setup:
     user_name:      "{{ influxdb_telegraf_user }}"
     user_password:  "{{ influxdb_telegraf_pw }}"
