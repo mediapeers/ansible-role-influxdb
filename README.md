@@ -7,13 +7,15 @@ Role that sets up a complete TICK stack server (not installing telegraf). It wil
 This role is meant for a server that receives metrics from the Telegraf agent and stores them in InfluxDB and allow monitoring and alerting
 through Chronograf and Kapacitor all on one host. Chronograf will be configured with Github OAuth to protect from public access.
 
-
 ## Requirements
 
-Debian or Ubuntu server. Open port 8086 to receive InfluxDB traffic from outside this machine. Also open port 8888 to expose Chronograf to the outside
-world or another port if you change the config or put a webserver infront of it.
+Ubuntu 16.04 or newer as OS. Other distros might also work, but they should have the package `python-influxdb` available in their apt repos.
+This pacakge is needed as a depedendency for the Ansible influxdb modules to work.
 
-**NOTE:** This role was only tested on Ubuntu 16.04 so far, so there might be issues on other distros! Feel free to open a PR against this repo to fix them.
+If you use Ansible version below 2.6 you might also have to add influxdb modules to your Ansible project library dir (usually `./libary/`).
+Find them at https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/database/influxdb
+
+Also open port 8888 to expose Chronograf to the outside world or another port if you change the config or put a webserver (reverse proxy) infront of it.
 
 ## Role Variables
 

@@ -14,6 +14,61 @@
     mode: 0755
     state: directory
 
+- name: Make sure InfluxDB is started (for following tasks)
+  service:
+    name: influxdb
+    state: started
+
+- name: Pause for a second to wait for service coming up
+  pause:
+    seconds: 2
+
+- name: Test if InfluxDB is running
+  shell: "curl --silent -I http://{{ influxdb_host }}:{{ influxdb_port}}/ping"
+  args:
+    warn: false
+  register: curl_result
+
+- name: InfluxDB request response
+  debug:
+    var: curl_result.stdout_lines
+
+# -- Admin user Creation (when not in restore backup mode and when auth is still off) --
+
+- name: Check if auth is already switched on (from previous run/install)
+  uri:
+    url: "http://{{ influxdb_host }}:{{ influxdb_port}}/query"
+    return_content: yes
+    status_code:
+      - 200
+      - 400
+      - 401
+  register: query_result
+
+- name: Determine result of auth check (if we are not in restore mode)
+  set_fact:
+    influxdb_auth_status: "{{ query_result.json['error'] }}"
+  when:
+    - influxdb_meta_backup is undefined
+    - query_result is defined
+
+- name: Create InfluxDB admin user (if auth is off)
+  influxdb_user:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    # User setup:
+    user_name:      "{{ influxdb_admin_user }}"
+    user_password:  "{{ influxdb_admin_pw }}"
+    admin: true
+    state: present
+  register: admin_user_creation
+  when:
+    - influxdb_auth_status is defined
+    - influxdb_auth_status != 'unable to parse authentication credentials'
+
+# -- Configuration and Restore (if in restore mode) --
+
 - name: Stop the InfluxDB server before configuration/restore
   service:
     name: influxdb
@@ -39,30 +94,26 @@
     var: restore_output
   when: influxdb_meta_backup is defined
 
-- name: Start the InfluxDB server before to using it in the next steps
+# --- Initial setup of Dabases and users for Telegraf and Chronograf (if not in restore mode) ---
+
+- name: Start the InfluxDB server again
   service:
     name: influxdb
     enabled: yes
     state: started
 
-- name: Create InfluxDB admin user
-  shell: >
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "CREATE USER {{ influxdb_admin_user }} WITH PASSWORD '{{ influxdb_admin_pw }}' WITH ALL PRIVILEGES"
-  when: influxdb_meta_backup is undefined
-  register: admin_output
-
-- name: Output result of admin creation
-  debug:
-    var: admin_output
-  when: influxdb_meta_backup is undefined
+- name: Pause for a second to wait for service coming up
+  pause:
+    seconds: 2
 
 - name: Create telegraf and chronograf DBs
   influxdb_database:
+    # Connection details:
     hostname:       "{{ influxdb_host }}"
     port:           "{{ influxdb_port }}"
     username:       "{{ influxdb_admin_user }}"
     password:       "{{ influxdb_admin_pw }}"
+    # DB setup:
     database_name:  "{{ item }}"
     state: present
   with_items:
@@ -72,43 +123,68 @@
 
 - name: Create retention policy for telegraf DB
   influxdb_retention_policy:
+    # Connection details:
     hostname:       "{{ influxdb_host }}"
     port:           "{{ influxdb_port }}"
     username:       "{{ influxdb_admin_user }}"
     password:       "{{ influxdb_admin_pw }}"
     database_name:  "{{ influxdb_telegraf_db }}"
+    # policy setup:
     policy_name: "{{ telegraf_retention_policy_name }}"
     duration: "{{ telegraf_retention_time }}"
     replication: 1
     default: true
   when: influxdb_meta_backup is undefined
 
-- name: Create chronograf app user with READ access to telegraf and chronograf DB
-  shell: >
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "CREATE USER {{ influxdb_chronograf_user }} WITH PASSWORD '{{ influxdb_chronograf_pw }}'" &&
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_chronograf_user }}" &&
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "GRANT ALL ON {{ influxdb_chronograf_db }} TO {{ influxdb_chronograf_user }}"
-  register: chronograf_output
+- name: Create InfluxDB chronograf user for Chronograf app access
+  influxdb_user:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    login_username: "{{ influxdb_admin_user }}"
+    login_password: "{{ influxdb_admin_pw }}"
+    # User setup:
+    user_name:      "{{ influxdb_chronograf_user }}"
+    user_password:  "{{ influxdb_chronograf_pw }}"
+    state: present
   when: influxdb_meta_backup is undefined
 
-- name: Output result of chronograf user creation
-  debug:
-    var: chronograf_output
+- name: Grant access to telegraf and chronograf DBs for chronograf user
+  influxdb_query:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    database_name:  "{{ item }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    # GRANT access query:
+    query: "GRANT ALL ON {{ item }} TO {{ influxdb_chronograf_user }}"
+  with_items:
+    - "{{ influxdb_telegraf_db }}"
+    - "{{ influxdb_chronograf_db }}"
   when: influxdb_meta_backup is undefined
 
-- name: Create telegraf agent user with WRITE access to telegraf DB
-  shell: >
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "CREATE USER {{ influxdb_telegraf_user }} WITH PASSWORD '{{ influxdb_telegraf_pw }}'" &&
-    influx -host {{ influxdb_host }} -port {{ influxdb_port }} -username {{ influxdb_admin_user }} -password {{ influxdb_admin_pw }}
-    -execute "GRANT ALL ON {{ influxdb_telegraf_db }} TO {{ influxdb_telegraf_user }}"
-  register: telegraf_output
+- name: Create InfluxDB user for the telegraf agents
+  influxdb_user:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    login_username: "{{ influxdb_admin_user }}"
+    login_password: "{{ influxdb_admin_pw }}"
+    # User setup:
+    user_name:      "{{ influxdb_telegraf_user }}"
+    user_password:  "{{ influxdb_telegraf_pw }}"
+    state: present
   when: influxdb_meta_backup is undefined
 
-- name: Output result of telegraf user creation
-  debug:
-    var: telegraf_output
+- name: Grant access to telegraf user to WRITE to telegraf DB
+  influxdb_query:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    database_name:  "{{ influxdb_telegraf_db }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    # GRANT access query:
+    query: "GRANT WRITE ON {{ influxdb_telegraf_db }} TO {{ influxdb_telegraf_user }}"
   when: influxdb_meta_backup is undefined
