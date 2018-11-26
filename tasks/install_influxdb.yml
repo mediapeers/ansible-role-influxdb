@@ -19,6 +19,10 @@
     name: influxdb
     state: started
 
+- name: Pause for a second to wait for service coming up
+  pause:
+    seconds: 2
+
 - name: Test if InfluxDB is running
   shell: "curl --silent -I http://{{ influxdb_host }}:{{ influxdb_port}}/ping"
   args:
@@ -97,6 +101,10 @@
     name: influxdb
     enabled: yes
     state: started
+
+- name: Pause for a second to wait for service coming up
+  pause:
+    seconds: 2
 
 - name: Create telegraf and chronograf DBs
   influxdb_database:
