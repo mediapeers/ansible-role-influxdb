@@ -2,9 +2,10 @@
 
 # Ansible InfluxDB server role
 
-Role that sets up a complete TICK stack server (not installing telegraf). It will install a compleete setup of InfluxDB, Chronograf and Kapacitor.
+Role that sets up a complete TICK stack server (not installing telegraf). It will install a complete setup
+of [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/), [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/) and [Kapacitor](https://www.influxdata.com/time-series-platform/kapacitor/).
 
-This role is meant for a server that receives metrics from the Telegraf agent and stores them in InfluxDB and allow monitoring and alerting
+This role is meant for a server that receives metrics from the [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) agent and stores them in InfluxDB to allow monitoring and alerting
 through Chronograf and Kapacitor all on one host. Chronograf will be configured with Github OAuth to protect from public access.
 
 ## Requirements
