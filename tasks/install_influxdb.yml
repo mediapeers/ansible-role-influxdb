@@ -45,6 +45,14 @@
     enabled: yes
     state: started
 
+- name: Test if InfluxDB is running
+  shell: "curl --silent -I http://{{ influxdb_host }}:{{ influxdb_port}}/ping"
+  register: curl_result
+
+- name: Debug Output
+  debug:
+    var: curl_result.stdout
+
 - name: Create InfluxDB admin user
   influxdb_user:
     # Connection details:
