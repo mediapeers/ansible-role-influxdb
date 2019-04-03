@@ -43,3 +43,10 @@ influxdb_chronograf_oauth_github_org: myorg # change this and make sure oauth ap
 
 # Publicly reachable URL for chronograf
 chronograf_public_url: 'https://chronograf.my-domain.com'
+
+# Kapacitor settings
+
+# Either path to a file, STDOUT or STDERR
+kapacitor_log_destination: '/var/log/kapacitor/kapacitor.log'
+# Either DEBUG, INFO, WARN, ERROR, or OFF
+kapacitor_log_level: INFO

@@ -34,10 +34,10 @@ default-retention-policy = ""
 [logging]
     # Destination for logs
     # Can be a path to a file or 'STDOUT', 'STDERR'.
-    file = "/var/log/kapacitor/kapacitor.log"
+    file = "{{ kapacitor_log_destination }}"
     # Logging level can be one of:
     # DEBUG, INFO, WARN, ERROR, or OFF
-    level = "INFO"
+    level = "{{ kapacitor_log_level }}"
 
 [load]
   # Enable/Disable the service for loading tasks/templates/handlers
