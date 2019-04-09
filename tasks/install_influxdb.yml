@@ -104,7 +104,7 @@
 
 - name: Pause for a second to wait for service coming up
   pause:
-    seconds: 2
+    seconds: 10
 
 - name: Create telegraf and chronograf DBs
   influxdb_database:
