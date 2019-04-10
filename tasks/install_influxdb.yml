@@ -102,9 +102,15 @@
     enabled: yes
     state: started
 
-- name: Pause for a second to wait for service coming up
-  pause:
-    seconds: 10
+- name: Wait for the influxdb service to come up
+  uri:
+    url: "http://{{ influxdb_host }}:{{ influxdb_port }}/status"
+    status_code: 200,204
+  retries: 20
+  delay: 5
+  register: check_result
+  until: check_result.status == 204
+  changed_when: false
 
 - name: Create telegraf and chronograf DBs
   influxdb_database:
