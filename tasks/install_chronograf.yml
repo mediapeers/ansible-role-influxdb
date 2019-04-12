@@ -10,7 +10,7 @@
     name: chronograf
     state: stopped
 
-- name: Configure startup params (overwriting original init script)
+- name: Configure startup params (overwriting default init script ENV variables)
   template:
     src: chronograf_defaults.j2
     dest: /etc/default/chronograf
