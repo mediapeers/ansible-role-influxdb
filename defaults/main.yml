@@ -32,6 +32,10 @@ influxdb_chronograf_pw: abc123
 influxdb_telegraf_user: telegraf
 influxdb_telegraf_pw: ab123
 
+# Influxdb Log settings
+influxdb_query_log_enabled: false
+influxdb_request_log_enabled: false
+
 # Chronograf auth
 # For users connecting to chronograf through OAuth
 # Docs: https://docs.influxdata.com/chronograf/v1.5/administration/config-options/#authentication-options
