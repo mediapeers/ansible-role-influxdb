@@ -10,7 +10,11 @@ influxdb_data_dir: /var/lib/influxdb
 telegraf_retention_policy_name: metrics
 telegraf_retention_time: 90d
 
+prometheus_retention_policy_name: metrics
+prometheus_retention_time: 180d
+
 influxdb_telegraf_db: telegraf
+influxdb_prometheus_db: prometheus
 influxdb_chronograf_db: chronograf
 
 # Set this variable to not create users and DBs and use a InluxDB meta DB backup

@@ -112,7 +112,7 @@
   until: check_result.status == 204
   changed_when: false
 
-- name: Create telegraf and chronograf DBs
+- name: Create telegraf, Prometheus and chronograf DBs
   influxdb_database:
     # Connection details:
     hostname:       "{{ influxdb_host }}"
@@ -124,6 +124,7 @@
     state: present
   with_items:
     - "{{ influxdb_telegraf_db }}"
+    - "{{ influxdb_prometheus_db }}"
     - "{{ influxdb_chronograf_db }}"
   when: influxdb_meta_backup is undefined
 
@@ -141,6 +142,22 @@
     replication: 1
     default: true
   when: influxdb_meta_backup is undefined
+
+- name: Create retention policy for prometheus DB
+  influxdb_retention_policy:
+    # Connection details:
+    hostname:       "{{ influxdb_host }}"
+    port:           "{{ influxdb_port }}"
+    username:       "{{ influxdb_admin_user }}"
+    password:       "{{ influxdb_admin_pw }}"
+    database_name:  "{{ influxdb_prometheus_db }}"
+    # policy setup:
+    policy_name: "{{ prometheus_retention_policy_name }}"
+    duration: "{{ prometheus_retention_time }}"
+    replication: 1
+    default: true
+  when: influxdb_meta_backup is undefined
+
 
 - name: Create InfluxDB chronograf user for Chronograf app access
   influxdb_user:
