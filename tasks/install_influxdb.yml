@@ -21,7 +21,7 @@
 
 - name: Pause a few seconds to wait for service to come up
   pause:
-    seconds: 4
+    seconds: 6
 
 - name: Test if InfluxDB is running
   shell: "curl --silent -I http://{{ influxdb_host }}:{{ influxdb_port}}/ping"
