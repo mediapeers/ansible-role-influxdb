@@ -1,3 +1,5 @@
+**Moved to https://github.com/mediafellows/ansible-role-influxdb**
+
 [![Build Status](https://travis-ci.com/mediapeers/ansible-role-influxdb.svg?branch=master)](https://travis-ci.com/mediapeers/ansible-role-influxdb)
 
 # Ansible InfluxDB server role
